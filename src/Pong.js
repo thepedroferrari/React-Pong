@@ -112,11 +112,15 @@ class Pong extends Component {
 		requestAnimationFrame(this.callback);
 	};
 
+	handleMouseMove = (e) => {
+		this.players[0].position.y = e.nativeEvent.offsetY - this.players[0].size.y * 0.36;
+	};
+
 	render() {
 		return (
 			<React.Fragment>
 				<h1>Pong</h1>
-				<canvas id="pong" ref="pong" width={1200} height={800} />
+				<canvas id="pong" ref="pong" width={1200} height={800} onMouseMove={this.handleMouseMove} />
 			</React.Fragment>
 		);
 	}
