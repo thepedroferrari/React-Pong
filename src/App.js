@@ -12,6 +12,18 @@ class Rectangle {
 		this.position = new Vector();
 		this.size = new Vector(w, h);
 	}
+	get left() {
+		return this.position.x - this.size.x / 2;
+	}
+	get right() {
+		return this.position.x + this.size.x / 2;
+	}
+	get top() {
+		return this.position.y - this.size.x / 2;
+	}
+	get bottom() {
+		return this.position.y + this.size.x / 2;
+	}
 }
 
 class Ball extends Rectangle {
@@ -22,9 +34,9 @@ class Ball extends Rectangle {
 }
 
 class App extends Component {
-	// state = {
-	// 	lastTime: null
-	// };
+	state = {
+		lastTime: null
+	};
 	componentDidMount() {
 		// Set the back canvas
 		this.canvas = this.refs.pong;
@@ -33,34 +45,30 @@ class App extends Component {
 		// Set the Ball
 		this.ball = new Ball();
 		this.ball.velocity.x = -200;
-		this.ball.velocity.y = 1;
+		this.ball.velocity.y = 200;
 		this.ball.position.x = this.canvas.width / 2;
 		this.ball.position.y = this.canvas.height / 2;
 
 		// Setup the animation
 		//this.setState({ lastTime: 0 });
-		this.callback(100);
-	}
-
-	invert(num) {
-		return -Math.abs(num);
+		this.lastTime = null;
+		this.callback(1000);
 	}
 
 	componentDidUpdate() {}
 
 	update(deltaTime) {
-		this.ball.position.x += this.ball.velocity.x * deltaTime;
 		this.ball.position.y += this.ball.velocity.y * deltaTime;
+		this.ball.position.x += this.ball.velocity.x * deltaTime;
 
 		// Prevent going outside canvas
-		/* if (this.ball.position.x < 0) {
+		if (this.ball.left < 0 || this.ball.right > this.canvas.width) {
 			this.ball.velocity.x = -this.ball.velocity.x;
-			console.log(this.ball.velocity.x);
-		} */
-		/* if (this.ball.position.y < 0 || this.ball.position.y > this.canvas.height) {
-			console.log(this.ball.velocity.y);
-			this.ball.velocity.y = this.ball.velocity.y * -1;
-		} */
+		}
+
+		if (this.ball.top < 0 || this.ball.bottom > this.canvas.height) {
+			this.ball.velocity.y = -this.ball.velocity.y;
+		}
 
 		// Re-Paint Context
 		this.context.fillStyle = 'black';
@@ -69,14 +77,14 @@ class App extends Component {
 		// Re-Paint updated Ball
 		this.context.fillStyle = 'white';
 		this.context.fillRect(this.ball.position.x, this.ball.position.y, this.ball.size.x, this.ball.size.y);
-
-		this.lastTime = null;
 	}
 
 	callback = (milliseconds) => {
-		if (this.lastTime) {
-			this.update((milliseconds - this.lastTime) / 1000);
+		let lastTime = this.lastTime || milliseconds;
+		if (lastTime) {
+			this.update((milliseconds - lastTime) / 1000);
 		}
+		lastTime = milliseconds;
 		this.lastTime = milliseconds;
 		requestAnimationFrame(this.callback);
 	};
@@ -86,7 +94,6 @@ class App extends Component {
 			<React.Fragment>
 				<h1>Pong</h1>
 				<canvas id="pong" ref="pong" width={1200} height={800} />
-				{this.callback()}
 			</React.Fragment>
 		);
 	}
