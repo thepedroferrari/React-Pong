@@ -5,6 +5,14 @@ class Vector {
 		this.x = x;
 		this.y = y;
 	}
+	get length() {
+		return Math.sqrt(this.x * this.x + this.y * this.y);
+	}
+	set length(value) {
+		const factor = value / this.length;
+		this.x *= factor;
+		this.y *= factor;
+	}
 }
 
 class Rectangle {
@@ -97,6 +105,7 @@ class Pong extends Component {
 			player.bottom > ball.top
 		) {
 			this.ball.velocity.x = -this.ball.velocity.x;
+			this.ball.velocity.length *= 1.1;
 		}
 	};
 
@@ -128,8 +137,10 @@ class Pong extends Component {
 		if (this.ball.velocity.x === 0) {
 			console.log('start');
 			this.reset();
-			this.ball.velocity.x = 500 * (Math.random() > 0.5 ? 1 : -1);
+			this.ball.velocity.x = 500 * (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 2 - 1);
 			this.ball.velocity.y = 500 * (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 2 - 1);
+
+			this.ball.velocity.length = 500;
 		}
 	};
 
