@@ -118,11 +118,20 @@ class Pong extends Component {
 	}
 
 	reset() {
-		this.ball.velocity.x = 800;
-		this.ball.velocity.y = 100;
-		this.ball.position.x = 0;
-		this.ball.position.y = 0;
+		this.ball.velocity.x = 0;
+		this.ball.velocity.y = 0;
+		this.ball.position.x = this.canvas.width / 2;
+		this.ball.position.y = this.canvas.height / 2;
 	}
+
+	start = () => {
+		if (this.ball.velocity.x === 0) {
+			console.log('start');
+			this.reset();
+			this.ball.velocity.x = 500 * (Math.random() > 0.5 ? 1 : -1);
+			this.ball.velocity.y = 500 * (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 2 - 1);
+		}
+	};
 
 	update(deltaTime) {
 		this.ball.position.y += this.ball.velocity.y * deltaTime;
@@ -173,7 +182,7 @@ class Pong extends Component {
 					width={1200}
 					height={800}
 					onMouseMove={this.handleMouseMove}
-					onClick={this.flagger}
+					onClick={this.start}
 				/>
 			</React.Fragment>
 		);
