@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import { numbers } from './components/Numbers';
 class Vector {
 	constructor(x = 0, y = 0) {
 		this.x = x;
@@ -41,6 +41,14 @@ class Ball extends Rectangle {
 	}
 }
 
+class ScoreLight extends Rectangle {
+	constructor(left, top) {
+		super(20, 20);
+		this.position.x = left;
+		this.position.y = top;
+	}
+}
+
 class Player extends Rectangle {
 	constructor() {
 		super(20, 100); //? Width and height of the player this is drawing a rectangle with dimensions x/y
@@ -49,6 +57,12 @@ class Player extends Rectangle {
 }
 
 class Pong extends Component {
+	state = {
+		score: {
+			player1: 0,
+			player2: 0
+		}
+	};
 	componentDidMount() {
 		// Set the back canvas
 		this.canvas = this.refs.pong;
@@ -56,6 +70,8 @@ class Pong extends Component {
 
 		// Set the Ball
 		this.ball = new Ball();
+
+		// ScoreBoard
 
 		// Set the Players
 		this.players = [ new Player(), new Player() ];
@@ -68,21 +84,6 @@ class Pong extends Component {
 		this.callback(1000);
 		this.reset();
 		this.flag = false;
-
-		// Score design (3 by 3 arrays lights on/off)
-		this.CHAR_PIXEL = 10;
-		this.CHARS = [
-			'111101101101111',
-			'010010010010010',
-			'111001111100111',
-			'111001111001111',
-			'101101111001001',
-			'111100111001111',
-			'111100111101111',
-			'111001001001001',
-			'111101111101111',
-			'111101111001111'
-		];
 	}
 
 	componentDidUpdate() {}
@@ -133,8 +134,13 @@ class Pong extends Component {
 		// Paint updated Ball
 		this.drawRectangle(this.ball);
 
+		// Create the ScoreBoard
+
 		// Paint the Players
-		this.players.forEach((player) => this.drawRectangle(player));
+		this.players.forEach((player) => {
+			this.drawRectangle(player);
+			console.log(player);
+		});
 	}
 
 	drawRectangle(rectangle) {
@@ -159,6 +165,22 @@ class Pong extends Component {
 		}
 	};
 
+	printScore = (player, score) => {
+		numbers[score].forEach((line, index) =>
+			line.forEach((number, idx) => {
+				if (number !== 0) {
+					const left = 300 + 20 * idx + 600 * player;
+					const top = 50 + 20 * index;
+
+					const score = new ScoreLight(left, top);
+					console.log(score);
+
+					this.drawRectangle(score);
+				}
+			})
+		);
+	};
+
 	update(deltaTime) {
 		this.ball.position.y += this.ball.velocity.y * deltaTime;
 		this.ball.position.x += this.ball.velocity.x * deltaTime;
@@ -167,6 +189,10 @@ class Pong extends Component {
 		if (this.ball.left < 0 || this.ball.right > this.canvas.width) {
 			const playerId = (this.ball.velocity.x < 0) | 0;
 			this.players[playerId].score++;
+
+			const score = this.players[playerId].score;
+			this.printScore(playerId, score);
+
 			this.reset();
 		}
 
