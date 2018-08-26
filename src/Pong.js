@@ -105,6 +105,7 @@ class Pong extends Component {
 			player.bottom > ball.top
 		) {
 			this.ball.velocity.x = -this.ball.velocity.x;
+			this.ball.velocity.y += 300 * (Math.random() - 0.5);
 			this.ball.velocity.length *= 1.1;
 		}
 	};
