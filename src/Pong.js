@@ -68,6 +68,21 @@ class Pong extends Component {
 		this.callback(1000);
 		this.reset();
 		this.flag = false;
+
+		// Score design (3 by 3 arrays lights on/off)
+		this.CHAR_PIXEL = 10;
+		this.CHARS = [
+			'111101101101111',
+			'010010010010010',
+			'111001111100111',
+			'111001111001111',
+			'101101111001001',
+			'111100111001111',
+			'111100111101111',
+			'111001001001001',
+			'111101111101111',
+			'111101111001111'
+		];
 	}
 
 	componentDidUpdate() {}
@@ -136,7 +151,6 @@ class Pong extends Component {
 
 	start = () => {
 		if (this.ball.velocity.x === 0) {
-			console.log('start');
 			this.reset();
 			this.ball.velocity.x = 500 * (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 2 - 1);
 			this.ball.velocity.y = 500 * (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 2 - 1);
