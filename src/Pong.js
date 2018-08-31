@@ -53,6 +53,7 @@ class Player extends Rectangle {
 	constructor() {
 		super(20, 100); //? Width and height of the player this is drawing a rectangle with dimensions x/y
 		this.score = 0;
+		this.matrix = numbers[this.score];
 	}
 }
 
@@ -70,6 +71,41 @@ class Pong extends Component {
 
 		// Set the Ball
 		this.ball = new Ball();
+
+		// Set the ScoreLight
+		this.scoreLight = [ {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} ];
+		this.scoreLight[0] = new ScoreLight();
+		this.scoreLight[1] = new ScoreLight();
+		this.scoreLight[2] = new ScoreLight();
+		this.scoreLight[3] = new ScoreLight();
+		this.scoreLight[4] = new ScoreLight();
+		this.scoreLight[5] = new ScoreLight();
+		this.scoreLight[6] = new ScoreLight();
+		this.scoreLight[7] = new ScoreLight();
+		this.scoreLight[8] = new ScoreLight();
+		this.scoreLight[9] = new ScoreLight();
+		this.scoreLight[10] = new ScoreLight();
+		this.scoreLight[11] = new ScoreLight();
+		this.scoreLight[12] = new ScoreLight();
+		this.scoreLight[13] = new ScoreLight();
+		this.scoreLight[14] = new ScoreLight();
+		this.scoreLight[15] = new ScoreLight();
+		this.scoreLight[16] = new ScoreLight();
+		this.scoreLight[17] = new ScoreLight();
+		this.scoreLight[18] = new ScoreLight();
+		this.scoreLight[19] = new ScoreLight();
+		this.scoreLight[20] = new ScoreLight();
+		this.scoreLight[21] = new ScoreLight();
+		this.scoreLight[22] = new ScoreLight();
+		this.scoreLight[23] = new ScoreLight();
+		this.scoreLight[24] = new ScoreLight();
+		this.scoreLight[25] = new ScoreLight();
+		this.scoreLight[26] = new ScoreLight();
+		this.scoreLight[27] = new ScoreLight();
+		this.scoreLight[28] = new ScoreLight();
+		this.scoreLight[29] = new ScoreLight();
+		this.scoreLight[30] = new ScoreLight();
+		this.scoreLight[31] = new ScoreLight();
 
 		// ScoreBoard
 
@@ -135,16 +171,16 @@ class Pong extends Component {
 		this.drawRectangle(this.ball);
 
 		// Create the ScoreBoard
+		this.updateScore();
 
 		// Paint the Players
 		this.players.forEach((player) => {
 			this.drawRectangle(player);
-			console.log(player);
 		});
 	}
 
-	drawRectangle(rectangle) {
-		this.context.fillStyle = 'white';
+	drawRectangle(rectangle, color = rectangle.color || 'white') {
+		this.context.fillStyle = color;
 		this.context.fillRect(rectangle.left, rectangle.top, rectangle.size.x, rectangle.size.y);
 	}
 
@@ -153,6 +189,9 @@ class Pong extends Component {
 		this.ball.velocity.y = 0;
 		this.ball.position.x = this.canvas.width / 2;
 		this.ball.position.y = this.canvas.height / 2;
+
+		this.printScore(0, 0);
+		this.printScore(1, 0);
 	}
 
 	start = () => {
@@ -166,19 +205,23 @@ class Pong extends Component {
 	};
 
 	printScore = (player, score) => {
-		numbers[score].forEach((line, index) =>
+		numbers[score].forEach((line, index) => {
+			let i = 0;
 			line.forEach((number, idx) => {
-				if (number !== 0) {
-					const left = 300 + 20 * idx + 600 * player;
-					const top = 50 + 20 * index;
+				const left = 300 + 20 * idx + 600 * (Math.floor((i + 1) / 16) * player);
+				const top = 50 + 20 * index;
+				this.scoreLight[i].position.x = left;
+				this.scoreLight[i].position.y = top;
+				this.scoreLight[i].color = 'white';
 
-					const score = new ScoreLight(left, top);
-					console.log(score);
-
-					this.drawRectangle(score);
+				if (number === 0) {
+					this.scoreLight[i].color = 'black';
 				}
-			})
-		);
+				console.log(i);
+				this.drawRectangle(this.scoreLight[i]);
+			});
+			i++;
+		});
 	};
 
 	update(deltaTime) {
@@ -188,10 +231,14 @@ class Pong extends Component {
 		// Prevent going outside canvas
 		if (this.ball.left < 0 || this.ball.right > this.canvas.width) {
 			const playerId = (this.ball.velocity.x < 0) | 0;
-			this.players[playerId].score++;
 
+			this.players[playerId].score++;
 			const score = this.players[playerId].score;
-			this.printScore(playerId, score);
+
+			this.players[playerId].matrix = numbers[score];
+			this.updateScore = () => {
+				this.printScore(playerId, score);
+			};
 
 			this.reset();
 		}
