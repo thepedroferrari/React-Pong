@@ -105,8 +105,6 @@ class Pong extends Component {
 		this.scoreLight = [ {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} ];
 		this.scoreLight[0] = new ScoreLight();
 
-		// ScoreBoard
-
 		// Set the Players
 		this.players = [ new Player(), new Player() ];
 		this.players[0].position.x = 100;
