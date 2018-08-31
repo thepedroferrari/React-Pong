@@ -104,43 +104,14 @@ class Pong extends Component {
 		// Set the ScoreLight
 		this.scoreLight = [ {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} ];
 		this.scoreLight[0] = new ScoreLight();
-		this.scoreLight[1] = new ScoreLight();
-		this.scoreLight[2] = new ScoreLight();
-		this.scoreLight[3] = new ScoreLight();
-		this.scoreLight[4] = new ScoreLight();
-		this.scoreLight[5] = new ScoreLight();
-		this.scoreLight[6] = new ScoreLight();
-		this.scoreLight[7] = new ScoreLight();
-		this.scoreLight[8] = new ScoreLight();
-		this.scoreLight[9] = new ScoreLight();
-		this.scoreLight[10] = new ScoreLight();
-		this.scoreLight[11] = new ScoreLight();
-		this.scoreLight[12] = new ScoreLight();
-		this.scoreLight[13] = new ScoreLight();
-		this.scoreLight[14] = new ScoreLight();
-		this.scoreLight[15] = new ScoreLight();
-		this.scoreLight[16] = new ScoreLight();
-		this.scoreLight[17] = new ScoreLight();
-		this.scoreLight[18] = new ScoreLight();
-		this.scoreLight[19] = new ScoreLight();
-		this.scoreLight[20] = new ScoreLight();
-		this.scoreLight[21] = new ScoreLight();
-		this.scoreLight[22] = new ScoreLight();
-		this.scoreLight[23] = new ScoreLight();
-		this.scoreLight[24] = new ScoreLight();
-		this.scoreLight[25] = new ScoreLight();
-		this.scoreLight[26] = new ScoreLight();
-		this.scoreLight[27] = new ScoreLight();
-		this.scoreLight[28] = new ScoreLight();
-		this.scoreLight[29] = new ScoreLight();
-		this.scoreLight[30] = new ScoreLight();
-		this.scoreLight[31] = new ScoreLight();
 
 		// ScoreBoard
 
 		// Set the Players
 		this.players = [ new Player(), new Player() ];
 		this.players[0].position.x = 100;
+		this.players[0].score = -1; // Bugfix?
+		console.log(this.players[0]);
 		this.players[1].position.x = this.canvas.width - 100;
 		this.players.forEach((player) => (player.position.y = this.canvas.height / 2 - player.size.y / 2));
 
@@ -148,29 +119,9 @@ class Pong extends Component {
 		this.lastTime = null;
 		this.callback(1000);
 		this.reset();
-		this.flag = false;
 	}
 
 	componentDidUpdate() {}
-
-	flagger = () => {
-		// Function meant for testing
-		this.flag = !this.flag;
-
-		console.log(
-			'1PLA:',
-			this.players[0]
-			// '1PLA Y:',
-			// Math.floor(this.players[0].position.y)
-		);
-		console.log(
-			'2PLA:',
-			this.players[1]
-			// '2PLA Y:',
-			// Math.floor(this.players[1].position.y)
-		);
-		console.log('Ball', this.ball);
-	};
 
 	createSound = (hz, iteration, hzPerIteration) => {
 		const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -209,6 +160,9 @@ class Pong extends Component {
 		this.drawRectangle(this.ball);
 
 		// Create the ScoreBoard
+
+		this.printScore(0, 0);
+		this.printScore(1, 0);
 		this.updateScore();
 
 		// Paint the Players
@@ -236,17 +190,7 @@ class Pong extends Component {
 			this.ball.velocity.y = 500 * (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 2 - 1);
 
 			this.ball.velocity.length = 500;
-			this.printScore(0, 0);
-			this.printScore(1, 0);
 			this.createSound(200, 3, 100);
-
-			/* 		note.play(293.66, now + 0.1);
-			note.play(329.63, now + 0.2);
-			note.play(349.23, now + 0.3);
-			note.play(392.0, now + 0.4);
-			note.play(440.0, now + 0.5);
-			note.play(493.88, now + 0.6);
-			note.play(523.25, now + 0.7); */
 		}
 	};
 
@@ -284,6 +228,7 @@ class Pong extends Component {
 			const score = this.players[playerId].score;
 
 			this.players[playerId].matrix = numbers[score];
+
 			this.updateScore = () => {
 				this.printScore(playerId, score);
 			};
