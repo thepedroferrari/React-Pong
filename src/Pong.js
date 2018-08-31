@@ -51,12 +51,41 @@ class ScoreLight extends Rectangle {
 
 class Player extends Rectangle {
 	constructor() {
-		super(20, 100); //? Width and height of the player this is drawing a rectangle with dimensions x/y
+		super(20, 200); //? Width and height of the player this is drawing a rectangle with dimensions x/y
 		this.score = 0;
 		this.matrix = numbers[this.score];
 	}
 }
 
+class Sound {
+	constructor(context) {
+		this.context = context;
+	}
+
+	init() {
+		this.oscillator = this.context.createOscillator();
+		this.gainNode = this.context.createGain();
+
+		this.oscillator.connect(this.gainNode);
+		this.gainNode.connect(this.context.destination);
+		this.oscillator.type = 'sine';
+	}
+
+	play(value, time) {
+		this.init();
+
+		this.oscillator.frequency.value = value;
+		this.gainNode.gain.setValueAtTime(1, this.context.currentTime);
+
+		this.oscillator.start(time);
+		this.stop(time + 1);
+	}
+
+	stop(time) {
+		this.gainNode.gain.exponentialRampToValueAtTime(0.000001, time + 1);
+		this.oscillator.stop(time + 1);
+	}
+}
 class Pong extends Component {
 	state = {
 		score: {
@@ -143,11 +172,18 @@ class Pong extends Component {
 		console.log('Ball', this.ball);
 	};
 
-	checkCollided(val1, val2) {
-		if (val1 - val2 < 20) {
-			return true;
+	createSound = (hz, iteration, hzPerIteration) => {
+		const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+		const note = new Sound(audioContext);
+		const now = audioContext.currentTime;
+		if (iteration) {
+			for (let i = 0; i <= iteration; i++) {
+				note.play(hz + i * hzPerIteration, now);
+			}
+		} else {
+			note.play(hz, now);
 		}
-	}
+	};
 
 	collide = (player, ball) => {
 		if (
@@ -156,6 +192,8 @@ class Pong extends Component {
 			player.top < ball.bottom &&
 			player.bottom > ball.top
 		) {
+			this.createSound(200);
+
 			this.ball.velocity.x = -this.ball.velocity.x;
 			this.ball.velocity.y += 300 * (Math.random() - 0.5);
 			this.ball.velocity.length *= 1.1;
@@ -189,9 +227,6 @@ class Pong extends Component {
 		this.ball.velocity.y = 0;
 		this.ball.position.x = this.canvas.width / 2;
 		this.ball.position.y = this.canvas.height / 2;
-
-		this.printScore(0, 0);
-		this.printScore(1, 0);
 	}
 
 	start = () => {
@@ -201,27 +236,40 @@ class Pong extends Component {
 			this.ball.velocity.y = 500 * (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 2 - 1);
 
 			this.ball.velocity.length = 500;
+			this.printScore(0, 0);
+			this.printScore(1, 0);
+			this.createSound(200, 3, 100);
+
+			/* 		note.play(293.66, now + 0.1);
+			note.play(329.63, now + 0.2);
+			note.play(349.23, now + 0.3);
+			note.play(392.0, now + 0.4);
+			note.play(440.0, now + 0.5);
+			note.play(493.88, now + 0.6);
+			note.play(523.25, now + 0.7); */
 		}
 	};
 
 	printScore = (player, score) => {
-		numbers[score].forEach((line, index) => {
-			let i = 0;
-			line.forEach((number, idx) => {
-				const left = 300 + 20 * idx + 600 * (Math.floor((i + 1) / 16) * player);
-				const top = 50 + 20 * index;
-				this.scoreLight[i].position.x = left;
-				this.scoreLight[i].position.y = top;
-				this.scoreLight[i].color = 'white';
+		if (score <= 9) {
+			numbers[score].forEach((line, index) => {
+				let i = 0;
+				line.forEach((number, idx) => {
+					const left = 300 + 20 * idx + 600 * player;
+					const top = 50 + 20 * index;
+					this.scoreLight[i].position.x = left;
+					this.scoreLight[i].position.y = top;
+					this.scoreLight[i].color = 'white';
 
-				if (number === 0) {
-					this.scoreLight[i].color = 'black';
-				}
-				console.log(i);
-				this.drawRectangle(this.scoreLight[i]);
+					if (number === 0) {
+						this.scoreLight[i].color = 'black';
+					}
+					let place = i * (player + 1);
+					this.drawRectangle(this.scoreLight[place]);
+				});
+				i++;
 			});
-			i++;
-		});
+		}
 	};
 
 	update(deltaTime) {
