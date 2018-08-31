@@ -109,7 +109,6 @@ class Pong extends Component {
 		this.players = [ new Player(), new Player() ];
 		this.players[0].position.x = 100;
 		this.players[0].score = -1; // Bugfix?
-		console.log(this.players[0]);
 		this.players[1].position.x = this.canvas.width - 100;
 		this.players.forEach((player) => (player.position.y = this.canvas.height / 2 - player.size.y / 2));
 
